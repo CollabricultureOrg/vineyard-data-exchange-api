@@ -1,0 +1,138 @@
+openapi: 3.0.0
+info:
+  title: Vineyard Map
+  description: API for exchange of precise vineyard block maps with vine-level precision.
+  version: '0.4'
+
+
+tags:
+  - name: Vineyards blocks
+    description: Manipulating the vineyard blocks
+  - name: Vineyard block
+    description: Manipulating a particular vineyard block
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+
+paths:
+  /vineyard_blocks:
+    get:
+      tags:
+        - Vineyards
+      summary: Returns a list of vineyard blocks along with data about the vineyard blocks.
+      description: Returns array of available vineyard blocks in VineyardBlockObject format.
+      responses:
+        '200':    # status code
+          description: A JSON array of VineyardBlockObjects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+    post:
+      tags:
+        - Vineyard blocks
+      summary: Adds a vineyard block.
+      description: The vineyard block must be in GeoPackage file format in a VineyardBlockMap structure.
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':    # status code
+          description: Returns a VineyardBlockObject of the added vineyard.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+
+  /vineyard_block/{id}:
+    get:
+      tags:
+        - Vineyard block
+      summary: Returns a VineyardBlockMap GeoPackage.
+      description: Returns a GeoPackage file of a vineyard block described in VineyardBlockMap structure.
+      parameters:
+        - name: id
+          in: path
+          description: ID of vineyard block to fetch
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':    # status code
+          description: A GeoPackage file with VineyardBlockMap structure.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+    post:
+      tags:
+        - Vineyard block
+      summary: Updates a vineyard block.
+      description: The vineyard block must be in GeoPackage file format in a VineyardBlockMap structure.
+      parameters:
+        - name: id
+          in: path
+          description: ID of vineyard block to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':    # status code
+          description: Returns a VineyardBlockObject of the updated vineyard block.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+    delete:
+      tags:
+        - Vineyard block
+      summary: Deletes a vineyard block.
+      parameters:
+      - name: id
+        in: path
+        description: ID of vineyard block to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':    # status code
+          description: Returns OK if successfully deleted, NO if nothing was deleted.
+          content:
+            application/json:
+              schema:
+                type: string
